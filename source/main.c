@@ -9,7 +9,7 @@
 #include <sys/stat.h>
 #include <switch.h>
 
-#include "vmir.h"
+#include "../vmir/vmir.h"
 
 static void
 usage(const char *argv0)
@@ -66,7 +66,6 @@ int main(int argc, char **argv)
 {
   gfxInitDefault();
   consoleInit(NULL);
-  printf("Hello!\n");
 
   int debug_flags = 0;
 
@@ -79,7 +78,6 @@ int main(int argc, char **argv)
   if (fd == -1)
   {
     perror("open");
-    goto end;
     exit(1);
   }
 
@@ -87,15 +85,12 @@ int main(int argc, char **argv)
   if (fstat(fd, &st))
   {
     perror("stat");
-    goto end;
-    //exit(1);
+    exit(1);
   }
-  printf("Size: %d\n", st.st_size);
   uint8_t *buf = malloc(st.st_size);
   if (read(fd, buf, st.st_size) != st.st_size)
   {
     perror("read");
-    goto end;
     exit(1);
   }
   close(fd);
@@ -117,7 +112,6 @@ int main(int argc, char **argv)
     free(mem);
     free(buf);
     vmir_destroy(iu);
-    goto end;
     return -1;
   }
   free(buf);
@@ -141,9 +135,6 @@ int main(int argc, char **argv)
 
   free(mem);
 
-  printf("\nDone executing!");
-
-end:
   while (appletMainLoop())
   {
     //Scan all the inputs. This should be done once for each frame
